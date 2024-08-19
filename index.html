@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <div id="menu-container">
+      <div class="menu" id="shortcut-menu">
+        <div class="toolbox">
+          <button class="toolbox-btn active">Raccourcis</button>
+          <button class="toolbox-btn">Routines</button>
+          <button class="toolbox-btn">Routines paramétrées</button>
+        </div>
+        <div class="category-container">
+          <div class="category">
+            <h3>Routines</h3>
+            <ul class="elements">
+              <!-- <li>jump</li>
+              <li>jump</li>
+              <li>jump</li>
+              <li>jump</li>
+              <li>jump</li>
+              <li>jump</li>
+              <li>jump</li> -->
+            </ul>
+          </div>
+          <div class="category">
+            <h3>Routines paramétrées</h3>
+            <div class="elements"></div>
+          </div>
+          <div class="category">
+            <h3>Fonctions</h3>
+            <div class="elements"></div>
+          </div>
+        </div>
+        <div class="workspace-container">
+          <div class="workspace" id="shortcut-workspace" style="display: none;">
+            <button id="add-shortcut-block-btn">
+              Ajouter un bloc raccourci
+            </button>
+            <div class="blocks">
+              <!-- <div class="shortcut-block">
+                <div class="condition">
+                  <span>key == </span
+                  ><select>
+                    <option value="a">a</option>
+                    <option value="b">b</option>
+                    <option value="c" selected>c</option>
+                    <option value="d">d</option>
+                  </select>
+                </div>
+                <div class="routine-block">
+                  <input
+                    type="text"
+                    placeholder="Routine"
+                    data-accept-type="routine-name"
+                  />
+                </div>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="workspace" id="routine-workspace" style="display: block;">
+            <button id="create-routine-btn">Créer cette routine</button>
+            <div class="blocks">
+                <!-- <p class="block-element radius-block">DEBUT Routine</p>
+                <button class="plus">+</button>
+                <div class="block-element routine-block">
+                    <input type="text" />
+                    <button class="delete-btn">X</button>
+                </div>
+                <button class="plus">+</button>
+                <p class="block-element radius-block">FIN Routine</p> -->
+            </div>
+          </div>
+
+          <div class="workspace" id="param-routine-workspace" style="display: none;">
+            <button id="create-param-routine-btn">Créer cette routine</button>
+            <div class="blocks">
+              <div class="block routine-creation-block">
+                <p class="block-element radius-block">
+                  DEBUT
+                  <input
+                    id="new-routine-name-1"
+                    type="text"
+                    placeholder="Nom routine"
+                  />
+                  <br />( <input type="text" placeholder="arg1" /> , <br />
+                  <input type="text" placeholder="arg2" />
+                  <button class="add-param-routine-arg-btn">+</button> ) <br />
+                  <!-- <span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2"> )</span> -->
+                </p>
+                <button class="plus">+</button>
+
+                <p class="block-element routine-block">
+                  <select class="instruction" name="routine" id="r-1">
+                    <option value="log">Log</option>
+                  </select>
+                </p>
+                <!-- <p class="block-element routine-block">
+                                    <input type="text" placeholder="Nom routine">
+                                </p> -->
+                <button class="plus">+</button>
+                <p class="block-element radius-block">
+                  <select>
+                    <option value="">logOf</option></select
+                  >( <br />
+                  <input type="text" placeholder="arg1" /> , <br />
+                  <input type="text" placeholder="arg2" /> , <br />
+                  <br /><span class="function-block">
+                    <select name="" id="">
+                      <option value="add">add</option>
+                    </select>
+                    (
+                    <br /><span class="function-block">
+                      <select name="" id="">
+                        <option value="add">add</option>
+                      </select>
+                      (<input type="text" placeholder="1" /> ,
+                      <input type="text" placeholder="2" />)
+                    </span>
+                    , <input type="text" placeholder="2" />)</span
+                  >)
+                </p>
+                <!-- <p class="block-element radius-block"><input type="text" placeholder="Nom routine">( <br> <input  type="text" placeholder="arg1"> , <br> <input type="text" placeholder="arg2"> , <br> 
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (
+                                    <br><span class="function-block">
+                                        <select name="" id="">
+                                            <option value="add">add</option>
+                                        </select>
+                                        (<input type="text" placeholder="1"> , <input type="text" placeholder="2">) </span>
+                                , <input type="text" placeholder="2">)</span>)
+                            </p> -->
+                <!-- <button class="plus">+</button> -->
+
+                <!-- <p class="block-element param-routine-block"> <input type="text" placeholder="Nom routine">( <br> <input  type="text" placeholder="arg1">, <br> 
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2"> )</span>)
+                            </p> -->
+
+                <!-- <button class="plus">+</button> -->
+                <!-- <p class="block-element param-routine-block"> <input type="text" placeholder="Nom routine">(
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                 )</span>,  <br> <input  type="text" placeholder="arg1">)
+                            </p> -->
+
+                <!-- <button class="plus">+</button> -->
+                <!-- <p class="block-element param-routine-block"> <input type="text" placeholder="Nom routine">(
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                 )</span>,  
+                                 <br><span class="function-block">
+                                    <select name="" id="">
+                                        <option value="add">add</option>
+                                    </select>
+                                    (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                     )</span>
+                                 )
+                            </p> -->
+                <!-- <p class="block-element param-routine-block"> <input type="text" placeholder="Nom routine">(
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                 )</span>,  
+                                 <br><span class="function-block">
+                                    <select name="" id="">
+                                        <option value="add">add</option>
+                                    </select>
+                                    (<br><span class="function-block">
+                                        <select name="" id="">
+                                            <option value="add">add</option>
+                                        </select>
+                                        (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                         )</span>, 
+                                         <br><span class="function-block">
+                                            <select name="" id="">
+                                                <option value="add">add</option>
+                                            </select>
+                                            (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                             )</span>
+                                     )</span>
+                                 )
+                            </p> -->
+
+                <!-- <button class="plus">+</button> -->
+                <!-- <p class="block-element param-routine-block"> <input type="text" placeholder="Nom routine">(
+                            <br><span class="function-block">
+                                <select name="" id="">
+                                    <option value="add">add</option>
+                                </select>
+                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                 )</span>,  
+                                 <br><span class="function-block">
+                                    <select name="" id="">
+                                        <option value="add">add</option>
+                                    </select>
+                                    (<br><span class="function-block">
+                                        <select name="" id="">
+                                            <option value="add">add</option>
+                                        </select>
+                                        (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                         )</span>, 
+                                         <br><span class="function-block">
+                                            <select name="" id="">
+                                                <option value="add">add</option>
+                                            </select>
+                                            (<br><span class="function-block">
+                                                <select name="" id="">
+                                                    <option value="add">add</option>
+                                                </select>
+                                                (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                                 )</span> , 
+                                                 <br><span class="function-block">
+                                                    <select name="" id="">
+                                                        <option value="add">add</option>
+                                                    </select>
+                                                    (<input type="text" placeholder="arg1"> , <input type="text" placeholder="arg2">,
+                                                     )</span>
+                                             )</span>
+                                     )</span>
+                                 )
+                            </p> -->
+
+                <button class="plus">+</button>
+                <p class="block-element radius-block">
+                  FIN
+                  <input
+                    id="new-routine-name-2"
+                    type="text"
+                    placeholder="Nom routine"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- 
+    <div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <input type="text" placeholder="nom routine" />
+      <br />
+      <br />
+      Routine
+      <select name="routine" id="">
+        <option value="jump">jump</option>
+        <option value="highjump">high jump</option>
+      </select>
+      <br />
+      Routine paramétrée
+      <select name="routine" id="">
+        <option value="jump">jump</option>
+        <option value="highjump">high jump</option>
+      </select>
+      ( chiffre
+      <select name="int" id="">
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+      ou fonction
+      <select name="fonction" id="">
+        <option value="add">add</option>
+      </select>
+      (
+      <select name="fonction" id="">
+        <option value="attack">attack</option>
+        <option value="9">9</option>
+      </select>
+      ,
+      <select name="fonction" id="">
+        <option value="9">9</option>
+        <option value="attack">attack</option>
+      </select>
+      ) )
+      <br />
+      Variable
+      <select name="variable" id="">
+        <option value="attack">attack</option>
+        <option value="defense">defense</option>
+      </select>
+      = int / fonction chiffre
+      <select name="int" id="">
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+      ou fonction
+      <select name="fonction" id="">
+        <option value="add">add</option>
+      </select>
+      (
+      <select name="fonction" id="">
+        <option value="attack">attack</option>
+        <option value="9">9</option>
+      </select>
+      ,
+      <select name="fonction" id="">
+        <option value="9">9</option>
+        <option value="attack">attack</option>
+      </select>
+      )
+      <br />
+      <br />
+
+      Création de routine
+      <br />
+      <input type="text" placeholder="Nom routine" id="routine-name" />
+      <br />
+      Routine (par défaut ou maison)
+      <br />
+      <select class="routine-block" name="routine-1" id="routine-1">
+        <option value="d-jump">jump</option>
+        <option value="d-highAttack">highAttack</option>
+        <option value="r-doubleHighAttack">doubleHighAttack</option>
+      </select>
+      <br />
+      ou Routine paramétrée
+      <br />
+      <select class="routine-block" name="routine-2" id="routine-2">
+        <option value="p-jumpOf">jumpOf(</option>
+        <option value="">highAttack(</option>
+        <option value="">doubleHighAttack(</option>
+      </select>
+      <select name="routine2" id="routine-2-args-1">
+        <option value="1">1)</option>
+        <option value="2">2)</option>
+        <option value="v-jumpHeight">jumpHeight)</option>
+      </select>
+      <br />
+      <button id="create-routine-btn">Create routine</button>
+      <br />
+      <br />
+
+      Création de routine paramétrée
+      <br />
+      <input type="text" placeholder="Nom routine" />
+      <br />Nombre d'arguments
+      <select name="" id="">
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+      <br />
+      Routine (par défaut ou maison)
+      <br />
+      <select name="routine1" id="">
+        <option value="">jump</option>
+        <option value="">highAttack</option>
+        <option value="">doubleHighAttack</option>
+      </select>
+      <br />
+      ou Routine paramétrée
+      <br />Nom
+      <select name="routine1" id="">
+        <option value="">jump(</option>
+        <option value="">highAttack(</option>
+        <option value="">doubleHighAttack(</option>
+      </select>
+      <select name="routine1" id="">
+        <option value="args[0]">args[0]</option>
+        <option value="">1)</option>
+        <option value="">2)</option>
+        <option value="">jumpHeight)</option>
+      </select>
+      <br />
+      <button id="create-param-routine-btn">Create routine</button>
+
+      <br />
+      <br />
+      Assignation de raccourcis
+      <br />
+      key
+      <select name="shortcut-key" id="shortcut-key">
+        <option value="b">b</option>
+        <option value="c">c</option>
+        <option value="d">d</option>
+      </select>
+      -> routines (ou defaultfunctions)
+      <select name="shortcut-action" id="shortcut-action">
+        <option value="d-jump">jump</option>
+        <option value="r-highJump">highjump</option>
+      </select>
+      <br />
+      <button id="change-shortcut-btn">Change shortcut</button>
+
+      <br />
+      <br />
+      <br />
+    </div> -->
+    <div id="game"></div>
+    <!-- <div id="toolkit"></div> -->
+    <!-- <script type="module" src="game.js"></script> -->
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

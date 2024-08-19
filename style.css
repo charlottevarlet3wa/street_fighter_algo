@@ -1,0 +1,484 @@
+:root {
+    --dark-lightblue :rgb(122, 201, 228);
+    --light-lightblue :rgb(219, 246, 255);
+    --darker-lightblue :  rgb(55, 131, 156);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas {
+    border: 1px solid black;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8rem;
+}
+
+/* MENU */
+
+.menu {
+    width: 800px;
+    height: 400px;
+    border: 1px solid black;
+    position: relative;
+}
+
+/* CATEGORIES */
+.category-container {
+    position: absolute;
+    /* left: 400px; */
+    left:550px;
+    width: 250px;
+    height: 100%;
+    background-color: lightblue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:5px;
+    padding: 10px 15px;
+
+}
+
+.category-container .category {
+    width: 100%;
+    text-align: center;
+}
+
+.category-container .category h3 {
+    background-color: var(--light-lightblue);
+    padding: 5px; 
+    margin-bottom: 5px;
+}
+
+ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+    gap: 5px;
+   
+}
+
+/* .category-container .category li { */
+.category-container .category li, .toolbox-btn, button {
+    font-weight: 600;
+    box-shadow: 1px 1px rgb(55, 131, 156);
+    cursor: pointer;
+    /* background-color: rgb(122, 201, 228); */
+    background-color: var(--dark-lightblue);
+    width: fit-content;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    list-style-type: none;
+}
+
+.category-container .category li {
+    cursor: grab;
+}
+.category-container .category li:active {
+    cursor: grabbing;
+}
+
+.category-container .category li:hover {
+    background-color: lightblue;
+}
+
+/* TOOLBOX */
+.toolbox {
+    position:absolute;
+    width: 550px;
+    height: 50px;
+    background-color: var(--light-lightblue);
+    display: flex;
+    padding: 10px;
+    gap: 5px;
+}
+
+.toolbox .toolbox-button {
+    cursor:pointer;
+}
+.toolbox .toolbox-btn.active {
+    background-color: var(--light-lightblue);
+}
+
+.toolbox-btn:hover {
+    background-color: var(--light-lightblue);
+}
+
+
+/* WORKSPACE */
+.workspace-container {
+    position: absolute;
+    top: 50px;
+    height: 350px;
+    width: 550px;
+    /* background-color: red; */
+}
+
+.workspace {
+    /* background-color: pink; */
+    position: absolute;
+    width: 100%;
+    max-height: 100%;
+    padding: 0 0 0 10px;
+    height: fit-content;
+}
+
+
+
+
+
+/* SHORTCUT BLOCK */
+
+#add-shortcut-block-btn {
+    margin: 10px 0;
+    cursor: pointer;
+}
+#add-shortcut-block-btn:hover {
+    background-color: var(--light-lightblue);
+}
+
+
+.blocks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-10%);
+}
+
+#shortcut-workspace .blocks, #param-routine-workspace, #routine-workspace {
+    display: flex;
+    flex-direction: row;
+    transform: none;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    gap: 5px;
+    height: 300px;
+    scrollbar-width: thin; /* Pour Firefox */
+    scrollbar-color: var(--dark-lightblue) var(--light-lightblue); /* Pour Firefox */
+}
+
+#shortcut-workspace .blocks {
+    flex-direction: row-reverse;
+    flex-wrap: wrap-reverse;
+    justify-content: flex-end;
+}
+
+#param-routine-workspace, #routine-workspace {
+    height: 350px;
+}
+
+#shortcut-blocks::-webkit-scrollbar {
+    width: 12px; /* Largeur de la scrollbar */
+}
+
+#shortcut-blocks::-webkit-scrollbar-track {
+    background: var(--light-lightblue); /* Couleur de fond de la scrollbar */
+}
+
+.shortcut-block {
+    /* border: 1px solid #000; */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    height: fit-content;
+    /* border: 3px solid var(--darker-lightblue); */
+    border-radius: 5px;
+}
+
+.condition {
+    /* background-color: lightcoral; */
+    height: 100px;
+    height: 100px;
+    position: relative;
+    
+}
+  .condition:after {
+    width  : 80px;
+    height : 80px;
+    content : '';
+    position : absolute;
+    transform: rotateZ(45deg);
+    border : 1px solid var(--darker-lightblue);
+  }
+
+  .condition::before {
+    content: '';
+    width: 1px;
+    height: 18px;
+    /* background-color: black; */
+    background-color: var(--darker-lightblue);
+    position: absolute;
+    bottom: -26px;
+    left: 40px;
+  }
+
+#shortcut-workspace .routine-block {
+    height: 50px;
+    width: 170px;
+    /* border: 1px solid black; */
+    border: 1px solid var(--darker-lightblue);
+    /* background-color: lightgreen; */
+    position: relative;
+}
+
+#shortcut-workspace .routine-block::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 140px;
+    width: 100%;
+    /* border: 1px solid black; */
+    border: 1px solid var(--darker-lightblue);
+    transform: translateX(5%);
+}
+
+.condition, #shortcut-workspace .routine-block {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#shortcut-workspace .routine-block .content {
+    width: 100%;
+}
+
+
+.condition select {
+    z-index: 10;
+}
+
+#shortcut-workspace .routine-block input, #shortcut-workspace .routine-block select {
+    width: 130px;
+    margin: auto;
+    z-index: 10;
+    transform: translateX(5%);
+}
+
+
+.delete-btn {
+    background-color: var(--darker-lightblue);
+    color: white;
+    font-weight: 500;
+    position: absolute;
+    right: -40px;
+    top: 0;
+}
+
+
+/* ROUTINE CREATION  */
+#routine-workspace .blocks {
+    /* background-color: pink; */
+    width: fit-content;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    left: 50px;
+
+    /* background: red; */
+}
+
+#routine-workspace .blocks::before {
+    background-color: black;
+    width: 1px;
+    top: 25px;
+    left: 50%;
+    height: calc(100% - 50px);
+    content: '';
+    position: absolute;
+    z-index: -5;
+}
+
+.radius-block {
+    border: 1px solid var(--darker-lightblue);
+    border-radius: 5px;
+}
+
+.block-element {
+    text-align: center;
+    padding: 5px;
+}
+
+
+#routine-workspace .block-element, #param-routine-workspace .block-element {
+    background-color: white;
+}
+
+.plus {
+    color: var(--darker-lightblue);
+    padding: 0 5px;
+    background-color: lightblue;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.plus:hover{
+    background-color: var(--light-lightblue);
+}
+
+#param-routine-workspace .block-element {
+    max-width: 400px;
+}
+
+.function-block {
+    background-color: var(--light-lightblue);
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 80%;
+    margin: auto;
+    position: relative;
+    border: 1px dashed var(--darker-lightblue);
+}
+
+
+.function-block::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: 'f';
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--darker-lightblue);
+}
+
+
+
+.block-element:not(.routine-block) input {
+    margin: 2px 0;
+    /* border-color: var(--darker-lightblue); */
+}
+
+#param-routine-workspace .routine-block::before {
+    transform: translateX(6%);
+}
+
+input {
+    outline-color: var(--darker-lightblue);
+}
+
+
+.param-routine-block {
+    /* position: relative; */
+    /* width: 200px; */
+    /* height: 200px; */
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 400px;
+    /* background-color: red; */
+    padding: 10px;
+    position: relative;
+    border: 1px solid var(--darker-lightblue);
+    background-color: white;
+    
+}
+
+.param-routine-block::after {
+    content: '';
+    border: 1px solid var(--darker-lightblue);
+    border-top:none;
+    border-bottom:none;
+    position: absolute;
+    width: 90%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: translateX(5%);
+    
+}
+
+
+input[type="number"], .function-block input {
+    width: 20px;
+}
+
+
+
+.routine-block select {
+    width: 130px;
+}
+
+select {
+    outline-color: var(--darker-lightblue);
+
+}
+
+option:disabled {
+    background-color: lightblue;
+}
+
+
+
+/* Routine block param */
+
+/* 
+#shortcut-workspace .routine-block {
+    height: 50px;
+    width: 170px;
+    border: 1px solid var(--darker-lightblue);
+    position: relative;
+}
+
+#shortcut-workspace .routine-block::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 140px;
+    width: 100%;
+    border: 1px solid var(--darker-lightblue);
+    transform: translateX(5%);
+}
+
+.condition, #shortcut-workspace .routine-block {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#shortcut-workspace .routine-block .content {
+    width: 100%;
+} */
+
+
+#routine-workspace .routine-block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 30px;
+    border: 1px solid var(--darker-lightblue);
+}
+
+#routine-workspace .routine-block::before {
+    content: '';
+    position: absolute;
+    /* background-color: pink; */
+    width: calc(100% - 30px);
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: translateX(15px);
+    border: 1px solid var(--darker-lightblue);
+    border-top: none;
+    border-bottom: none;
+}
+
+#routine-workspace .routine-block select, #routine-workspace .routine-block input {
+    z-index: 15;
+}
+
