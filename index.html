@@ -8,12 +8,19 @@
   </head>
   <body>
     <canvas id="canvas" width="800" height="400"></canvas>
+    <div id="pause-panel">
+      <span></span>
+      <span></span>
+    </div>
+    <div id="restart-panel">
+      <p>Game Over</p>
+      <button id="start-btn">START</button>
+    </div>
     <div id="menu-container">
       <div class="menu" id="shortcut-menu">
         <div class="toolbox">
           <button class="toolbox-btn active">Raccourcis</button>
           <button class="toolbox-btn">Routines</button>
-          <button class="toolbox-btn">Routines paramétrées</button>
         </div>
         <div class="category-container">
           <div class="category">
@@ -28,17 +35,17 @@
               <li>jump</li> -->
             </ul>
           </div>
-          <div class="category">
+          <!-- <div class="category">
             <h3>Routines paramétrées</h3>
             <div class="elements"></div>
-          </div>
+          </div> -->
           <div class="category">
             <h3>Fonctions</h3>
             <div class="elements"></div>
           </div>
         </div>
         <div class="workspace-container">
-          <div class="workspace" id="shortcut-workspace" style="display: none;">
+          <div class="workspace" id="shortcut-workspace" style="display: block;">
             <button id="add-shortcut-block-btn">
               Ajouter un bloc raccourci
             </button>
@@ -64,8 +71,11 @@
             </div>
           </div>
 
-          <div class="workspace" id="routine-workspace" style="display: block;">
-            <button id="create-routine-btn">Créer cette routine</button>
+          <div class="workspace" id="routine-workspace" style="display: none;">
+            <div id="create-routine-btn-container">
+              <button id="create-routine-btn">Créer cette routine</button>
+              <p class="error"></p>
+            </div>
             <div class="blocks">
                 <!-- <p class="block-element radius-block">DEBUT Routine</p>
                 <button class="plus">+</button>

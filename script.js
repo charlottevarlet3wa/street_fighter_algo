@@ -1,6 +1,20 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+const canvasWidth = canvas.width;
+
+const pausePanel = document.getElementById('pause-panel');
+let isPaused = true;  // Page is paused when loaded
+let isStarted = false;
+
+const startBtn = document.getElementById('start-btn');
+const restartPanel = document.getElementById('restart-panel');
+const endGameText = document.querySelector('#restart-panel p');
+
+const errorMsg = document.querySelector('#routine-workspace .error');
+
+
+
 class Fireball {
     constructor(x, y, direction, speed = 5, range = 100) {
         this.x = x;
@@ -39,7 +53,7 @@ class Fireball {
 
 
 class Character {
-    constructor(x, y, color) {
+    constructor(x, y, color, isDirectionLeft) {
         this.x = x;
         this.y = y;
         this.width = 50;
@@ -53,15 +67,28 @@ class Character {
         // Attack
         this.health = 100;
         this.opponent = null;
-        this.isDirectionLeft = false;
+        this.isDirectionLeft = isDirectionLeft;
         this.isHighAttacking = false;
         this.isLowAttacking = false;
         this.arm = {armWidth: 30, armHeight: 20, armY : this.y + 25};
         this.leg = {legWidth: 40, legHeight: 30, legY : this.y + this.height - 50};
         // IA
         this.isMovingTowards = false;
+        // Reset
+        this.resetData = {x : this.x, y : this.y, isDirectionLeft : this.isDirectionLeft};
+
         
 
+    }
+
+    reset(){
+        this.x = this.resetData.x;
+        this.y = this.resetData.y;
+        this.health = 100;
+        this.isDirectionLeft = this.resetData.isDirectionLeft;
+        this.isHighAttacking = false;
+        this.isLowAttacking = false;
+        this.isMovingTowards = false;
     }
 
     moveTowards(target) {
@@ -105,16 +132,36 @@ class Character {
 
     moveRight() {
         this.x += 5;
+        
+        if(this.x >= canvasWidth - this.width){
+            this.x = canvasWidth - this.width;
+        }
         this.isDirectionLeft = false;
     }
     
     moveLeft() {
         this.x -= 5;
+        if(this.x < 0){
+            this.x = 0;
+        }
         this.isDirectionLeft = true;
     }
 
     move(distance) {
-        console.log('move left');
+        distance = +distance;
+        this.x += distance;
+        
+        if(distance < 0) {
+            this.isDirectionLeft = true;
+            if(this.x <= 0) {
+                this.x = 0;
+            }
+        } else if(distance > 0) {
+            this.isDirectionLeft = false;
+            if(this.x >= canvasWidth - this.width) {
+                this.x = canvasWidth - this.width;
+            }
+        }
     }
 
     jump() {
@@ -149,7 +196,6 @@ class Character {
     }
     
     jumpOf(height = 80, duration = 20) {
-        console.log('jump high of ' + height + 'px');
         if(this.isJumping) return;
 
         this.isJumping = true;
@@ -283,7 +329,6 @@ class Character {
             const opponent = this.opponent;
             opponent.health -= 1; // Réduire les points de vie de l'adversaire
             opponent.recoil(10, this.isDirectionLeft);
-            console.log(`${opponent.color} character hit high! Health: ${opponent.health}`);
         }
     
         // Durée de l'attaque
@@ -303,7 +348,6 @@ class Character {
             const opponent = this.opponent;
             opponent.health -= 3; // Réduire les points de vie de l'adversaire
             opponent.recoil(20, this.isDirectionLeft);
-            console.log(`${opponent.color} character hit low! Health: ${opponent.health}`);
         }
         
         // Durée de l'attaque
@@ -335,12 +379,25 @@ class Character {
             if (toLeft) {
                 if (this.x > targetX) {
                     this.x -= recoilSpeed;
+
+                    if(this.x <= 0){
+                        this.x = 0;
+                        clearInterval(recoilInterval);
+                        return;
+
+                    }
                 } else {
                     clearInterval(recoilInterval);
                 }
             } else {
                 if (this.x < targetX) {
                     this.x += recoilSpeed;
+                    if(this.x >= canvasWidth - this.width){
+                        this.x = canvasWidth - this.width;
+                        clearInterval(recoilInterval);
+                        return;
+
+                    }
                 } else {
                     clearInterval(recoilInterval);
                 }
@@ -384,8 +441,8 @@ class Character {
 }
 
 class Player extends Character {
-    constructor(x, y, color, controls) {
-        super(x, y, color);   
+    constructor(x, y, color, isDirectionLeft, controls) {
+        super(x, y, color, isDirectionLeft);   
         this.controls = controls;
     }
 
@@ -393,11 +450,10 @@ class Player extends Character {
 
 }
 
-const player = new Player(140, 300, 'pink');
-const enemy = new Character(200, 300, 'lightblue');
+let player = new Player(100, 300, 'pink', false);
+let enemy = new Character(650, 300, 'lightblue', true);
 player.opponent = enemy;
 enemy.opponent = player;
-enemy.isDirectionLeft = true;
 
 const fireballs = []; // Tableau pour stocker les boules de feu actives
 
@@ -426,11 +482,6 @@ const codeData = {
         [
             player.jump.bind(player)
         ],
-        "doubleJump" : 
-        [
-            player.jump.bind(player),
-            player.jump.bind(player)
-        ],
         'moveLeft' : 
         [
             player.moveLeft.bind(player)
@@ -439,17 +490,28 @@ const codeData = {
         'highAttack': [player.highAttack.bind(player)],
         'lowAttack': [player.lowAttack.bind(player)],
         'fireballAttack': [player.fireballAttack.bind(player)],
-        'doubleHighAttack': [
-            player.highAttack.bind(player), 
-            wait(150), 
-            player.highAttack.bind(player)
+        // 'doubleHighAttack': [
+        //     player.highAttack.bind(player), 
+        //     wait(150), 
+        //     player.highAttack.bind(player)
+        // ],
+        'wait': [
+            wait(150)
         ]
     },
     paramRoutines : {
         "jumpOf(height, duration)": {
             args: ['height', 'duration'],
             code: (height, duration) => player.jumpOf(height, duration) 
+        },
+        "move(distance)": {
+            args: ['distance'],
+            code: (distance) => player.move(distance)
         }
+        // "wait": {
+        //     args: ['duration'],
+        //     code: (duration) => { return {type: 'wait', duration: parseInt(duration, 10)}; }
+        // }
 
     },
     variables : {
@@ -495,17 +557,6 @@ codeData.shortcuts = {
     // "a" : {type: 'routine', name: 'doubleHighAttack', code : [() => executeRoutine(codeData.routines.doubleHighAttack)],
 };
 
-// To delete
-function executeRoutine(routine) {
-    // console.log(routine[0])
-    // eval(routine[0]);
-    // eval('codeData.defaultFunctions.highAttack()');
-    routine.forEach(instruction => {
-        // console.log(instruction);
-        // eval('codeData.defaultFunctions.highAttack();');
-        eval(instruction);
-    })
-}
 
 // Fill the categories
 
@@ -521,6 +572,7 @@ function updateCategoryElements() {
     Object.entries(codeData.routines).forEach((routine, i) => {
         const newBtn = document.createElement('li');
         newBtn.textContent = routine[0];
+        newBtn.draggable = true;
         categories[0].appendChild(newBtn);
     });
 
@@ -528,19 +580,26 @@ function updateCategoryElements() {
     Object.entries(codeData.paramRoutines).forEach((routine, i) => {
         const newBtn = document.createElement('li');
         newBtn.textContent = routine[0];
+        newBtn.draggable = true;
         categories[1].appendChild(newBtn);
     });
 
-    // Functions
-    Object.entries(codeData.functions).forEach((f, i) => {
-        const newBtn = document.createElement('li');
-        newBtn.textContent = f[0];
-        categories[2].appendChild(newBtn);
+}
+
+function setupDraggableItems() {
+    const draggableItems = document.querySelectorAll('.category .elements li');
+    draggableItems.forEach(item => {
+        item.addEventListener('dragstart', function(event) {
+            console.log(event.target)
+            event.dataTransfer.setData('text/plain', event.target.textContent);
+        });
     });
 }
 
 
+
 updateCategoryElements();
+setupDraggableItems();  // Call this right after updating elements
 
 // Fill the workspaces
 
@@ -609,7 +668,6 @@ class ShortcutBlock {
                 const newRoutine = codeData.routines[newKey];
                 const newRoutineObject = {type: 'routine', name: routineName, code: newRoutine };
                 codeData.shortcuts[newKey] = newRoutineObject;
-                console.log(codeData.shortcuts);
                 updateShortcutBlocks();
             }
         });
@@ -659,7 +717,6 @@ class ShortcutBlock {
 
             // Sinon, actualise codeData.shortcuts
             codeData.shortcuts[oldKey] = newRoutineObject;
-            console.log(codeData.shortcuts);
             updateShortcutBlocks();
 
         });
@@ -766,6 +823,24 @@ class RoutineBlock {
         select.name = this.id;
         select.id = this.id;
 
+        select.addEventListener('dragover', (e) => e.preventDefault());  // Permettre le drop
+        select.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            select.classList.add('highlight');  // Facultatif: Ajouter une classe pour visualiser le drop possible
+        });
+
+        select.addEventListener('drop', (e) => {
+            const routineName = e.dataTransfer.getData('text/plain');
+            select.classList.remove('highlight');  // Retirer la classe de visualisation
+            // Trouver et sélectionner l'option correspondante
+            const matchingOption = Array.from(select.options).find(option => option.textContent === routineName);
+            if (matchingOption) {
+                select.value = matchingOption.value;
+                this.routineName = matchingOption.value;
+                select.dispatchEvent(new Event('change'));  // Déclencher l'événement change si nécessaire
+            }
+        });
+
         const options = Object.keys(codeData.routines);
         this.routineName = options[0];
 
@@ -788,20 +863,7 @@ class RoutineBlock {
             option.textContent = optionValue;
             select.appendChild(option);
         });
-        
 
-        // select.addEventListener('change', (e) => {
-        //     this.routineName = e.target.value;
-        //     if(Object.keys(codeData.routines).includes(this.routineName)){
-        //         console.log("it's a routine !");
-        //         this.type = 'routine';
-        //     } else {
-        //         console.log("it's a param routine !")
-        //         this.type = 'param-routine';
-        //     }
-        // });
-
-        //TODO
         select.addEventListener('change', (e) => {
             this.routineName = e.target.value;
             this.args = []; // Réinitialiser les arguments
@@ -848,6 +910,7 @@ class RoutineBlock {
     }
 
     deleteBlock(e) {
+        console.log('delete')
         const block = e.target.parentNode;
         const parent = block.parentNode;
     
@@ -856,10 +919,34 @@ class RoutineBlock {
         parent.removeChild(plusButton);
         parent.removeChild(block);
     
+        const routineBlocksElems = document.querySelectorAll('#routine-workspace .routine-block select');
+        console.log('routine blocks elems: ')
+        console.log(routineBlocksElems)
+        const routineBlocks = [];
+        routineBlocksElems.forEach(elem => {
+            console.log('elem :')
+            console.log(elem.id)
+            routineBlocks.push(elem.id);
+        });
+        console.log('routine blocks :')
+        console.log(routineBlocks)
+
+        console.log('this.id : ')
+        console.log(this.id)
+
+
+        
         // Supprimer le RoutineBlock concerné de newRoutineBlocks
         const index = newRoutineBlocks.findIndex(routine => routine.id === this.id);
+        // const index = routineBlocks.findIndex(routine => routine === this.id);
+        console.log('new routine blocks :')
+        console.log(newRoutineBlocks)
+        console.log(document.querySelectorAll('#routine-workspace .routine-block select'))
+        console.log('index of delete:')
+        console.log(index)
         if (index > -1) {
             newRoutineBlocks.splice(index, 1);
+            // routineBlocks.splice(index, 1);
         }
     }
 }
@@ -881,6 +968,8 @@ class AddRoutineButton {
     }
 
     addRoutineBlock(e) {
+        console.log('add')
+
         const parent = e.target.parentNode;
         const newRoutineBlock = new RoutineBlock(`r-${Date.now()}`);
         const newAddRoutinebutton = new AddRoutineButton().element;
@@ -891,7 +980,10 @@ class AddRoutineButton {
     
         // Insérer le nouveau RoutineBlock dans newRoutineBlocks à la bonne position
         const index = Array.from(parent.children).indexOf(newRoutineBlock.element) / 2;
+        console.log('index : ' + index)
         newRoutineBlocks.splice(index, 0, newRoutineBlock);
+        console.log('new routine blocks : ')
+        console.log(newRoutineBlocks)
     }
     
 }
@@ -906,44 +998,31 @@ blocksContainers[1].appendChild(newRoutineBlock.element);
 blocksContainers[1].appendChild(new AddRoutineButton().element);
 blocksContainers[1].appendChild(new EndBlock().element);
 
-//TODO
-// document.getElementById('create-routine-btn').addEventListener('click', (e) => {
-//     const newRoutineName = document.getElementById('new-routine-name').value;
-//     console.log(newRoutineName);
-    
-//     console.log(newRoutineBlocks);
-
-//     if(newRoutineName == "") {
-//         // console.warn('Routine name input is empty');
-//     }
-
-//     const instructions = [];
-
-//     newRoutineBlocks.forEach(routine => {
-//         if(routine.type == 'routine') {
-//             const code = codeData.routines[routine.routineName];
-//             instructions.push(...code);
-//         }
-//     });
-
-//     console.log(instructions);
-//     codeData.routines[newRoutineName] = instructions;
-
-//     console.log(codeData.routines);
-//     updateCategoryElements();
-//     updateShortcutBlocks();
-// });
-
 document.getElementById('create-routine-btn').addEventListener('click', (e) => {
     const newRoutineName = document.getElementById('new-routine-name').value;
+
+    const blocks = document.querySelectorAll('#routine-workspace select');
+
+    const blockIds = Array.from(blocks).map(block => block.id);
+
+    // Sort newRoutineBlocks according to the order of blockIds
+    const sortedNewRoutineBlocks = blockIds.map(id => newRoutineBlocks.find(block => block.id === id)).filter(block => block !== undefined);
     
     if (newRoutineName == "") {
-        return; // Ne rien faire si le nom est vide
+        errorMsg.textContent = 'Veuillez donner un nom à votre routine'
+        return;
     }
+
+    if (codeData.routines.hasOwnProperty(newRoutineName)) {
+        errorMsg.textContent = 'Une routine avec ce nom existe déjà';
+        return;
+    }
+    errorMsg.textContent = ''
+
 
     const instructions = [];
 
-    newRoutineBlocks.forEach(routine => {
+    sortedNewRoutineBlocks.forEach(routine => {
         if (routine.type == 'routine') {
             const code = codeData.routines[routine.routineName];
             instructions.push(...code);
@@ -955,11 +1034,35 @@ document.getElementById('create-routine-btn').addEventListener('click', (e) => {
         }
     });
 
+
+
     // Ajouter la nouvelle routine au codeData
     codeData.routines[newRoutineName] = instructions;
 
     updateCategoryElements();
     updateShortcutBlocks();
+
+
+
+    const workspace = document.querySelector('#routine-workspace .blocks');
+    
+    // Supprime tous les enfants sauf les blocs spécifiques
+    while (workspace.firstChild) {
+        workspace.removeChild(workspace.firstChild);
+    }
+
+    newRoutineBlocks.length = 0;
+
+    // Crée et ajoute les éléments nécessaires
+    const startBlock = new StartBlock();
+    workspace.appendChild(startBlock.element);
+
+    const addButton = new AddRoutineButton();
+    workspace.appendChild(addButton.element);
+
+    const endBlock = new EndBlock();
+    workspace.appendChild(endBlock.element);  
+    
 });
 
 
@@ -996,7 +1099,7 @@ function executeActionsWithDelay(actions, index = 0) {
     if (index >= actions.length) return;
 
     const action = actions[index];
-    
+
     if (typeof action === 'function') {
         action();
         executeActionsWithDelay(actions, index + 1);
@@ -1007,9 +1110,44 @@ function executeActionsWithDelay(actions, index = 0) {
     }
 }
 
+
+// function executeActionsWithDelay(actions, index = 0) {
+//     console.log('execute actions')
+//     console.log('actions :')
+//     console.log(actions)
+//     console.log('index :')
+//     console.log(index)
+//     if (index >= actions.length) return;
+
+//     const action = actions[index];
+//     console.log('action :')
+//     console.log(action)
+
+//     console.log('type of action :')
+//     console.log(typeof action)
+    
+//     if (typeof action === 'function') {
+//         action();
+//         executeActionsWithDelay(actions, index + 1);
+//     } else if (action.type === 'wait') {
+//         setTimeout(() => {
+//             executeActionsWithDelay(actions, index + 1);
+//         }, action.duration);
+//     }
+// }
+
+// function wait(duration) {
+//     return new Promise(resolve => setTimeout(resolve, duration));
+// }
+
+
+// TEST
 function wait(duration) {
     return { type: 'wait', duration: duration };
 }
+
+
+
 
 
 function sub(a, b){
@@ -1082,15 +1220,14 @@ function enemyAI() {
 
 
 
-
-
-
 function gameLoop() {
+    if(isPaused) return; 
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-        // Dessiner les barres de vie
-        player.drawHealthBar('left');
-        enemy.drawHealthBar('right');
+    // Dessiner les barres de vie
+    player.drawHealthBar('left');
+    enemy.drawHealthBar('right');
 
     // Dessiner les personnages
     player.draw();
@@ -1107,21 +1244,73 @@ function gameLoop() {
         if (fireball.hasCollided(opponent)) {
             opponent.health -= 1;
             opponent.recoil(100, fireball.isDirectionLeft);
-            console.log(`${opponent.color} character hit by fireball! Health: ${opponent.health}`);
             fireballs.splice(index, 1); // Supprimer la boule de feu après la collision
         } else if (fireball.hasReachedMaxRange()) {
             fireballs.splice(index, 1); // Supprimer la boule de feu après avoir atteint sa portée maximale
         }
     });
 
+    if(enemy.health <= 0) {
+        endGame(player);
+    } else if(player.health <= 0){
+        endGame(enemy);
+    }
+    
     requestAnimationFrame(gameLoop);
 }
 
 
-// Démarrer l'IA de l'ennemi
-enemyAI();
+function resetGame(){
+    isPaused = true;
+    isStarted = false;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    player.reset();
+    enemy.reset();
+
+    player.drawHealthBar('left');
+    enemy.drawHealthBar('right');
+
+    player.draw();
+    enemy.draw();
+
+    restartPanel.style.display = 'flex';    
+}
+
+resetGame();
+endGameText.style.display = 'none';
 
 
-gameLoop();
-// ctx.fillStyle = 'red';
-// ctx.fillRect(0, 0, 400, 400);
+startBtn.addEventListener('click', () => { 
+    endGameText.style.display = 'block';
+    restartPanel.style.display = 'none'
+    isPaused = false;
+    isStarted = true;
+
+    gameLoop();
+    enemyAI();
+    
+})
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {  // Press 'p' to toggle pause
+        isPaused = !isPaused;
+        if (!isPaused) {
+            pausePanel.style.display = 'none';
+            gameLoop();  // Resume the game loop if unpaused
+        } else if(isStarted){
+            pausePanel.style.display = 'flex';
+        }
+    }
+});
+
+function endGame(winner) {
+    if(winner === player){
+        endGameText.textContent = 'Well done !';
+    } else if(winner === enemy) {
+        endGameText.textContent = 'Try again !';
+    }
+    restartPanel.style.display = 'block';
+    resetGame();
+}
