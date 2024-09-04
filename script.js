@@ -60,7 +60,7 @@ class Character {
         this.height = 100; 
         this.color = color;
         this.health = 10;
-        this.element= this.createInstance();
+        // this.element= this.createInstance();
         // Jump
         this.isJumping = false;
         this.initialY = y;
@@ -124,11 +124,11 @@ class Character {
     
     
 
-    createInstance() {
-        const block = document.createElement('div');
-        block.textContent = "nouvelle div";
-        document.getElementById('game').appendChild(block);
-    }
+    // createInstance() {
+    //     const block = document.createElement('div');
+    //     block.textContent = "nouvelle div";
+    //     document.getElementById('game').appendChild(block);
+    // }
 
     moveRight() {
         this.x += 5;
